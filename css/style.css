@@ -733,6 +733,14 @@ img {
   justify-content: center;
   padding: 24px;
 }
+/* The [hidden] attribute is normally display:none via the UA stylesheet,
+   but our own `display: flex` above has equal specificity and would win
+   by source order — so it must be restated explicitly here, or the modal
+   (and its full-screen backdrop) stays interactive/intercepting clicks
+   even while "hidden". */
+.modal[hidden] {
+  display: none;
+}
 .modal__backdrop {
   position: absolute;
   inset: 0;
