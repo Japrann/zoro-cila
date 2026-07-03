@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Finding Cila & Zoro 🐾</title>
+<meta name="description" content="Bantu temukan Cila dan Zoro yang lagi main petak umpet — game memory match yang lucu dan cozy.">
+
+<!-- Theme / PWA -->
+<meta name="theme-color" content="#F3E4CF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cila & Zoro">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="assets/icons/favicon-32.png">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ AMBIENT BACKGROUND (shared across screens) ============ -->
+<div class="ambient" aria-hidden="true">
+  <div class="sky"></div>
+  <div class="cloud cloud--1"></div>
+  <div class="cloud cloud--2"></div>
+  <div class="cloud cloud--3"></div>
+  <div class="glow-particles" id="glowParticles"></div>
+  <div class="paw-trail" id="pawTrail"></div>
+</div>
+
+<!-- ============ SCREEN 1: WELCOME ============ -->
+<main id="welcomeScreen" class="screen welcome-screen" aria-label="Welcome screen">
+  <div class="welcome-card">
+    <div class="hero-paw" aria-hidden="true">
+      <span class="hero-paw__pad"></span>
+    </div>
+    <h1 class="title">
+      <span class="title__paw" aria-hidden="true">🐾</span>
+      Finding Cila &amp; Zoro
+    </h1>
+    <p class="subtitle">
+      Cila dan Zoro lagi main petak umpet…<br>
+      Bantu temukan mereka dengan mencocokkan semua foto mereka!
+    </p>
+
+    <div class="cat-peek" aria-hidden="true">
+      <div class="cat-peek__ear cat-peek__ear--left"></div>
+      <div class="cat-peek__ear cat-peek__ear--right"></div>
+    </div>
+
+    <button id="startBtn" class="btn btn--primary btn--large" type="button">
+      Start Finding <span aria-hidden="true">🐈</span>
+    </button>
+
+    <button id="howToPlayBtn" class="btn-link" type="button">Cara main?</button>
+  </div>
+</main>
+
+<!-- ============ SCREEN 2: GAME ============ -->
+<div id="gameScreen" class="screen game-screen" aria-label="Game screen" hidden>
+
+  <!-- Sticky HUD -->
+  <header class="hud">
+    <div class="hud__stat hud__stat--matches" title="Matches">
+      <span class="hud__icon" aria-hidden="true">🐾</span>
+      <span class="hud__value"><span id="matchCount">0</span>/8</span>
+    </div>
+    <div class="hud__stat hud__stat--moves" title="Moves">
+      <span class="hud__icon" aria-hidden="true">🎯</span>
+      <span class="hud__value" id="moveCount">0</span>
+    </div>
+    <div class="hud__stat hud__stat--time" title="Time">
+      <span class="hud__icon" aria-hidden="true">⏱</span>
+      <span class="hud__value" id="timeCount">00:00</span>
+    </div>
+    <button id="soundToggle" class="hud__sound" type="button" aria-pressed="true" aria-label="Toggle sound">
+      <span class="icon-sound-on" aria-hidden="true">🔊</span>
+      <span class="icon-sound-off" aria-hidden="true">🔇</span>
+    </button>
+  </header>
+
+  <!-- Progress paw trail (signature element) -->
+  <div class="progress-trail" id="progressTrail" aria-hidden="true"></div>
+
+  <!-- Board -->
+  <div class="board-wrap">
+    <div id="board" class="board" role="grid" aria-label="Memory card grid"></div>
+  </div>
+
+  <!-- Speech bubble for idle dialogues -->
+  <div id="speechBubble" class="speech-bubble" aria-live="polite"></div>
+
+  <!-- Restart -->
+  <button id="restartBtn" class="btn-icon-only" type="button" aria-label="Restart game">↻</button>
+</div>
+
+<!-- ============ SCREEN 3: WIN ============ -->
+<div id="winScreen" class="screen win-screen" aria-label="Win screen" hidden>
+  <canvas id="confettiCanvas" class="confetti-canvas" aria-hidden="true"></canvas>
+  <div class="win-card">
+    <h2 class="win-title">🎉 You Found Cila &amp; Zoro!</h2>
+    <p class="win-text">
+      Yay! Semua pasangan berhasil ditemukan.<br>
+      Sekarang Cila sama Zoro udah nggak sembunyi lagi 🐈🤍
+    </p>
+
+    <div id="collage" class="collage" aria-label="Found photos collage"></div>
+
+    <div class="win-stats">
+      <div class="win-stat">
+        <span class="win-stat__label">⭐ Moves</span>
+        <span class="win-stat__value" id="winMoves">0</span>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat__label">⏱ Time</span>
+        <span class="win-stat__value" id="winTime">00:00</span>
+      </div>
+      <div class="win-stat">
+        <span class="win-stat__label">🏆 Rating</span>
+        <span class="win-stat__value" id="winRating">★★★★★</span>
+      </div>
+    </div>
+
+    <div class="win-actions">
+      <button id="playAgainBtn" class="btn btn--primary" type="button">🔄 Play Again</button>
+      <button id="saveResultBtn" class="btn btn--secondary" type="button">📷 Save Result</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HOW TO PLAY MODAL ============ -->
+<div id="howToModal" class="modal" hidden>
+  <div class="modal__backdrop" data-close-modal></div>
+  <div class="modal__card">
+    <h3>Cara Main 🐾</h3>
+    <ul>
+      <li>Ketuk kartu untuk membuka foto Cila &amp; Zoro.</li>
+      <li>Cocokkan dua kartu dengan foto yang sama.</li>
+      <li>Selesaikan semua 8 pasangan secepat mungkin!</li>
+      <li>Makin sedikit langkah, makin tinggi bintangmu ⭐</li>
+    </ul>
+    <button class="btn btn--primary" data-close-modal type="button">Mengerti!</button>
+  </div>
+</div>
+
+<!-- Screen-reader live region for match feedback -->
+<div id="srAnnounce" class="sr-only" aria-live="assertive"></div>
+
+<script src="js/sounds.js" defer></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>
